@@ -25,7 +25,7 @@ type service struct {
 	terminalID  int
 }
 
-func NewService(serviceURL, gatewayURL, username, password, callbackURL string, terminalID int) paymentgo.Payment {
+func NewService(username, password, callbackURL string, terminalID int) paymentgo.Payment {
 	return service{
 		username:    username,
 		password:    password,
