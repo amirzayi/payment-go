@@ -7,6 +7,11 @@ import (
 	paymentgo "github.com/amirzayi/payment-go"
 )
 
+const (
+	serviceURL = "https://bpm.shaparak.ir/pgwchannel/services/pgw?wsdl"
+	gatewayURL = "https://bpm.shaparak.ir/pgwchannel/startpay.mellat"
+)
+
 type credentials struct {
 	TerminalID   int    `xml:"terminalId"`   // شماره پايانه پذيرنده
 	UserName     string `xml:"userName"`     // نام کاربری پذيرنده
@@ -14,8 +19,6 @@ type credentials struct {
 }
 
 type service struct {
-	serviceURL  string
-	gatewayURL  string
 	username    string
 	password    string
 	callbackURL string
@@ -24,8 +27,6 @@ type service struct {
 
 func NewService(serviceURL, gatewayURL, username, password, callbackURL string, terminalID int) paymentgo.Payment {
 	return service{
-		serviceURL:  serviceURL,
-		gatewayURL:  gatewayURL,
 		username:    username,
 		password:    password,
 		callbackURL: callbackURL,
