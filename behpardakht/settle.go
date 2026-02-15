@@ -29,7 +29,7 @@ type settleResponse struct {
 }
 
 func (m service) Settle(ctx context.Context, in settleRequestData) error {
-	response, err := base.Call[settleResponse](ctx, serviceURL, settleRequestBody{
+	response, err := base.DoPostApiCall[settleResponse](ctx, m.serviceURL, settleRequestBody{
 		BPSettleRequest: settleRequest{
 			credentials: credentials{
 				TerminalID:   m.terminalID,

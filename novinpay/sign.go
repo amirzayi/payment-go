@@ -28,7 +28,7 @@ type generateSignedDataTokenResponse struct {
 }
 
 func (s service) generateSignedDataToken(ctx context.Context, signature, uniqueId string) (generateSignedDataTokenResponse, error) {
-	txResult, err := base.NewPostCall[generateSignedDataTokenResponse](
+	txResult, err := base.DoPostApiCall[generateSignedDataTokenResponse](
 		ctx,
 		generateSignedDataTokenURL,
 		generateSignedDataTokenRequest{
@@ -83,7 +83,7 @@ type generateTransactionResponse struct {
 }
 
 func (s service) generateTransactionDataToSign(ctx context.Context, req payRequest) (generateTransactionResponse, error) {
-	txResult, err := base.NewPostCall[generateTransactionResponse](
+	txResult, err := base.DoPostApiCall[generateTransactionResponse](
 		ctx,
 		generateTransactionDataToSignURL,
 		generateTransactionRequest{

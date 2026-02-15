@@ -29,7 +29,7 @@ type verifyResponse struct {
 }
 
 func (m service) verify(ctx context.Context, in verifyRequestData) error {
-	response, err := base.Call[verifyResponse](ctx, serviceURL, verifyRequestBody{
+	response, err := base.DoPostApiCall[verifyResponse](ctx, m.serviceURL, verifyRequestBody{
 		BPVerifyRequest: verifyRequest{
 			credentials: credentials{
 				TerminalID:   m.terminalID,

@@ -21,7 +21,7 @@ type verifyResponse struct {
 }
 
 func (s service) Verify(ctx context.Context, in paymentgo.VerifiyRequest) error {
-	txResult, err := base.NewPostCall[verifyResponse](
+	txResult, err := base.DoPostApiCall[verifyResponse](
 		ctx,
 		verifyTransactionURL,
 		verifyTransactionRequest{

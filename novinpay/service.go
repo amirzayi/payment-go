@@ -46,7 +46,7 @@ type loginResponse struct {
 }
 
 func (s service) login(ctx context.Context) (string, error) {
-	loginResponse, err := base.NewPostCall[loginResponse](
+	loginResponse, err := base.DoPostApiCall[loginResponse](
 		ctx,
 		loginURI,
 		loginRequest{

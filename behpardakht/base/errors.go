@@ -53,6 +53,8 @@ var (
 	ErrStaticPasswordUsageLimitReached = errors.New("static password usage limit reached")
 	ErrCardOwnershipVerificationFailed = errors.New("card ownership verification failed")
 	ErrInvalidResponseFormat           = errors.New("invalid response format")
+
+	ErrInvalidResponseStatusCode = errors.New("invalid response status code")
 )
 
 func ConvertError(code string) error {

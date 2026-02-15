@@ -25,7 +25,7 @@ type soapEnvelopeResponse[T any] struct {
 	Body    T        `xml:"Body"`
 }
 
-func Call[T any](ctx context.Context, uri string, requestBody any) (T, error) {
+func DoPostApiCall[T any](ctx context.Context, url string, requestBody any) (T, error) {
 	var out T
 
 	request := soapEnvelopeRequest{
@@ -39,7 +39,7 @@ func Call[T any](ctx context.Context, uri string, requestBody any) (T, error) {
 		return out, err
 	}
 
-	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, bytes.NewReader(xmlData))
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(xmlData))
 	if err != nil {
 		return out, err
 	}
@@ -51,6 +51,9 @@ func Call[T any](ctx context.Context, uri string, requestBody any) (T, error) {
 		return out, err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return out, fmt.Errorf("%w %d", ErrInvalidResponseStatusCode, resp.StatusCode)
+	}
 
 	var response soapEnvelopeResponse[T]
 	err = xml.NewDecoder(resp.Body).Decode(&response)

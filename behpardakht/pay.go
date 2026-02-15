@@ -58,7 +58,7 @@ func (m service) Pay(ctx context.Context, in paymentgo.PayRequest) (string, stri
 	sendDate := now.Format("20060102")
 	sendTime := now.Format("150405")
 
-	response, err := base.Call[payResponse](ctx, serviceURL, payRequestBody{
+	response, err := base.DoPostApiCall[payResponse](ctx, m.serviceURL, payRequestBody{
 		BpPayRequest: payRequest{
 			credentials: credentials{
 				TerminalID:   m.terminalID,
@@ -81,6 +81,6 @@ func (m service) Pay(ctx context.Context, in paymentgo.PayRequest) (string, stri
 	}
 
 	refID := parts[1]
-	paymentURL := fmt.Sprintf("%s?RefId=%s", gatewayURL, refID)
+	paymentURL := fmt.Sprintf("%s?RefId=%s", m.gatewayURL, refID)
 	return refID, paymentURL, nil
 }

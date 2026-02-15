@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	serviceURL = "https://bpm.shaparak.ir/pgwchannel/services/pgw?wsdl"
-	gatewayURL = "https://bpm.shaparak.ir/pgwchannel/startpay.mellat"
+	ServiceURL = "https://bpm.shaparak.ir/pgwchannel/services/pgw?wsdl"
+	GatewayURL = "https://bpm.shaparak.ir/pgwchannel/startpay.mellat"
 )
 
 type credentials struct {
@@ -19,14 +19,18 @@ type credentials struct {
 }
 
 type service struct {
+	serviceURL  string
+	gatewayURL  string
 	username    string
 	password    string
 	callbackURL string
 	terminalID  int
 }
 
-func NewService(username, password, callbackURL string, terminalID int) paymentgo.Payment {
+func NewService(serviceURL, gatewayURL, username, password, callbackURL string, terminalID int) paymentgo.Payment {
 	return service{
+		serviceURL:  serviceURL,
+		gatewayURL:  gatewayURL,
 		username:    username,
 		password:    password,
 		callbackURL: callbackURL,
