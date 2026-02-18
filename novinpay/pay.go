@@ -39,5 +39,5 @@ func (s service) Pay(ctx context.Context, in paymentgo.PayRequest) (string, stri
 	if err != nil {
 		return "", "", err
 	}
-	return response.Token, paymentGatewayURL, nil
+	return response.Token, s.paymentGatewayURL, nil
 }

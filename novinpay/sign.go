@@ -6,6 +6,7 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"encoding/base64"
+	"fmt"
 	"strings"
 	"time"
 
@@ -30,7 +31,7 @@ type generateSignedDataTokenResponse struct {
 func (s service) generateSignedDataToken(ctx context.Context, signature, uniqueId string) (generateSignedDataTokenResponse, error) {
 	txResult, err := base.DoPostApiCall[generateSignedDataTokenResponse](
 		ctx,
-		generateSignedDataTokenURL,
+		s.serviceURL+generateSignedDataTokenURL,
 		generateSignedDataTokenRequest{
 			WsContext: wsContext{
 				UserId:   s.userName,
@@ -85,7 +86,7 @@ type generateTransactionResponse struct {
 func (s service) generateTransactionDataToSign(ctx context.Context, req payRequest) (generateTransactionResponse, error) {
 	txResult, err := base.DoPostApiCall[generateTransactionResponse](
 		ctx,
-		generateTransactionDataToSignURL,
+		s.serviceURL+generateTransactionDataToSignURL,
 		generateTransactionRequest{
 			WsContext: wsContext{
 				UserId:   s.userName,
@@ -119,7 +120,10 @@ func (s service) signToken(token string) (string, error) {
 		return "", err
 	}
 
-	pv := privateKey.(*rsa.PrivateKey)
+	pv, ok := privateKey.(*rsa.PrivateKey)
+	if !ok {
+		return "", fmt.Errorf("private key is not valid")
+	}
 	sign, err := signWithKey(pv, token)
 	if err != nil {
 		return "", err

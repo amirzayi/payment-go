@@ -23,14 +23,13 @@ func DoPostApiCall[T any](ctx context.Context, url string, requestBody any) (T, 
 		return response, err
 	}
 	defer httpResponse.Body.Close()
+	if httpResponse.StatusCode != http.StatusOK {
+		return response, fmt.Errorf("%w %d", ErrInvalidResponseStatusCode, httpResponse.StatusCode)
+	}
 
 	err = json.NewDecoder(httpResponse.Body).Decode(&response)
 	if err != nil {
 		return response, fmt.Errorf("failed to decode response: %w", err)
-	}
-
-	if httpResponse.StatusCode != http.StatusOK {
-		return response, fmt.Errorf("http call failed with status: %s", http.StatusText(httpResponse.StatusCode))
 	}
 	return response, nil
 }

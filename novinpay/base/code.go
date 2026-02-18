@@ -32,6 +32,8 @@ var (
 
 	ErrMismatchVerificationRefnum = errors.New("mismatch verification refnum")
 	ErrMismatchVerificationAmount = errors.New("mismatch verification amount")
+
+	ErrInvalidResponseStatusCode = errors.New("invalid response status code")
 )
 
 func GetResponseError(response string) error {
