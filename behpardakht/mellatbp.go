@@ -2,6 +2,7 @@ package behpardakht
 
 import (
 	"context"
+	"net/http"
 	"strconv"
 
 	paymentgo "github.com/amirzayi/payment-go"
@@ -19,6 +20,7 @@ type credentials struct {
 }
 
 type service struct {
+	httpClient  *http.Client
 	serviceURL  string
 	gatewayURL  string
 	username    string
@@ -27,8 +29,9 @@ type service struct {
 	terminalID  int
 }
 
-func NewService(serviceURL, gatewayURL, username, password, callbackURL string, terminalID int) paymentgo.Payment {
+func NewService(httpClient *http.Client, serviceURL, gatewayURL, username, password, callbackURL string, terminalID int) paymentgo.Payment {
 	return service{
+		httpClient:  httpClient,
 		serviceURL:  serviceURL,
 		gatewayURL:  gatewayURL,
 		username:    username,

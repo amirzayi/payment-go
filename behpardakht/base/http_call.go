@@ -25,7 +25,7 @@ type soapEnvelopeResponse[T any] struct {
 	Body    T        `xml:"Body"`
 }
 
-func DoPostApiCall[T any](ctx context.Context, url string, requestBody any) (T, error) {
+func DoPostApiCall[T any](ctx context.Context, httpClient *http.Client, url string, requestBody any) (T, error) {
 	var out T
 
 	request := soapEnvelopeRequest{
@@ -46,7 +46,7 @@ func DoPostApiCall[T any](ctx context.Context, url string, requestBody any) (T, 
 
 	httpReq.Header.Set("Content-Type", "text/xml; charset=utf-8")
 
-	resp, err := http.DefaultClient.Do(httpReq)
+	resp, err := httpClient.Do(httpReq)
 	if err != nil {
 		return out, err
 	}

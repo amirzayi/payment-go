@@ -24,7 +24,7 @@ func TestPay(t *testing.T) {
 		paymentSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
 		defer paymentSrv.Close()
 
-		bp := behpardakht.NewService(paymentSrv.URL, behpardakht.GatewayURL, "username", "password", paymentSrv.URL, 1)
+		bp := behpardakht.NewService(http.DefaultClient, paymentSrv.URL, behpardakht.GatewayURL, "username", "password", paymentSrv.URL, 1)
 
 		refID, paymentURL, err := bp.Pay(ctx, paymentgo.PayRequest{
 			Amount: 100000,
@@ -48,7 +48,7 @@ func TestPay(t *testing.T) {
 		}))
 		defer paymentSrv.Close()
 
-		bp := behpardakht.NewService(paymentSrv.URL, behpardakht.GatewayURL, "username", "password", paymentSrv.URL, 1)
+		bp := behpardakht.NewService(http.DefaultClient, paymentSrv.URL, behpardakht.GatewayURL, "username", "password", paymentSrv.URL, 1)
 
 		refID, paymentURL, err := bp.Pay(ctx, paymentgo.PayRequest{
 			Amount: 100000,
@@ -75,7 +75,7 @@ func TestPay(t *testing.T) {
 		}))
 		defer paymentSrv.Close()
 
-		bp := behpardakht.NewService(paymentSrv.URL, behpardakht.GatewayURL, "username", "password", paymentSrv.URL, 1)
+		bp := behpardakht.NewService(http.DefaultClient, paymentSrv.URL, behpardakht.GatewayURL, "username", "password", paymentSrv.URL, 1)
 
 		refID, paymentURL, err := bp.Pay(ctx, paymentgo.PayRequest{
 			Amount: 100000,
@@ -108,7 +108,7 @@ func TestPay(t *testing.T) {
 		}))
 		defer paymentSrv.Close()
 
-		bp := behpardakht.NewService(paymentSrv.URL, behpardakht.GatewayURL, "username", "password", paymentSrv.URL, 1)
+		bp := behpardakht.NewService(http.DefaultClient, paymentSrv.URL, behpardakht.GatewayURL, "username", "password", paymentSrv.URL, 1)
 
 		refID, paymentURL, err := bp.Pay(ctx, paymentgo.PayRequest{
 			Amount: 100000,
@@ -136,7 +136,7 @@ func TestPay(t *testing.T) {
 		}))
 		defer paymentSrv.Close()
 
-		bp := behpardakht.NewService(paymentSrv.URL, behpardakht.GatewayURL, "username", "password", paymentSrv.URL, 1)
+		bp := behpardakht.NewService(http.DefaultClient, paymentSrv.URL, behpardakht.GatewayURL, "username", "password", paymentSrv.URL, 1)
 
 		refID, paymentURL, err := bp.Pay(ctx, paymentgo.PayRequest{
 			Amount: 100000,
@@ -166,7 +166,7 @@ func TestPay(t *testing.T) {
 		}))
 		defer paymentSrv.Close()
 
-		bp := behpardakht.NewService(paymentSrv.URL, behpardakht.GatewayURL, "username", "password", paymentSrv.URL, 1)
+		bp := behpardakht.NewService(http.DefaultClient, paymentSrv.URL, behpardakht.GatewayURL, "username", "password", paymentSrv.URL, 1)
 
 		refID, paymentURL, err := bp.Pay(ctx, paymentgo.PayRequest{
 			Amount: 100000,

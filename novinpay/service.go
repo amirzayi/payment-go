@@ -3,6 +3,7 @@ package novinpay
 import (
 	"context"
 	"io"
+	"net/http"
 	"strings"
 
 	paymentgo "github.com/amirzayi/payment-go"
@@ -10,6 +11,7 @@ import (
 )
 
 type service struct {
+	httpClient          *http.Client
 	serviceURL          string
 	paymentGatewayURL   string
 	userName            string
@@ -21,12 +23,13 @@ type service struct {
 	certificate         []byte
 }
 
-func NewService(serviceURL, paymentGatewayURL, userName, password, merchantID, terminalID, callbackURL, certificatePassword string, certificate io.Reader) (paymentgo.Payment, error) {
+func NewService(httpClient *http.Client, serviceURL, paymentGatewayURL, userName, password, merchantID, terminalID, callbackURL, certificatePassword string, certificate io.Reader) (paymentgo.Payment, error) {
 	b, err := io.ReadAll(certificate)
 	if err != nil {
 		return service{}, err
 	}
 	return service{
+		httpClient:          httpClient,
 		serviceURL:          serviceURL,
 		paymentGatewayURL:   paymentGatewayURL,
 		userName:            userName,
@@ -52,6 +55,7 @@ type loginResponse struct {
 func (s service) login(ctx context.Context) (string, error) {
 	loginResponse, err := base.DoPostApiCall[loginResponse](
 		ctx,
+		s.httpClient,
 		s.serviceURL+loginURI,
 		loginRequest{
 			UserName: s.userName,

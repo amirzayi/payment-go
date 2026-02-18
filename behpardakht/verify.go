@@ -28,21 +28,25 @@ type verifyResponse struct {
 	Result base.Response `xml:"bpVerifyRequestResponse"`
 }
 
-func (m service) verify(ctx context.Context, in verifyRequestData) error {
-	response, err := base.DoPostApiCall[verifyResponse](ctx, m.serviceURL, verifyRequestBody{
-		BPVerifyRequest: verifyRequest{
-			credentials: credentials{
-				TerminalID:   m.terminalID,
-				UserName:     m.username,
-				UserPassword: m.password,
+func (s service) verify(ctx context.Context, in verifyRequestData) error {
+	response, err := base.DoPostApiCall[verifyResponse](
+		ctx,
+		s.httpClient,
+		s.serviceURL,
+		verifyRequestBody{
+			BPVerifyRequest: verifyRequest{
+				credentials: credentials{
+					TerminalID:   s.terminalID,
+					UserName:     s.username,
+					UserPassword: s.password,
+				},
+				verifyRequestData: verifyRequestData{
+					OrderID:         in.OrderID,
+					SaleOrderID:     in.SaleOrderID,
+					SaleReferenceID: in.SaleReferenceID,
+				},
 			},
-			verifyRequestData: verifyRequestData{
-				OrderID:         in.OrderID,
-				SaleOrderID:     in.SaleOrderID,
-				SaleReferenceID: in.SaleReferenceID,
-			},
-		},
-	})
+		})
 	if err != nil {
 		return err
 	}

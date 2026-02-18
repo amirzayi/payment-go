@@ -29,7 +29,7 @@ func TestVerify(t *testing.T) {
 					"Result": base.ResponseInvalidUserOrPass,
 				})
 			},
-			base.ErrResponseInvalidUserOrPass,
+			base.ErrInvalidUserOrPass,
 		},
 		{
 			"invald source ip",
@@ -38,7 +38,7 @@ func TestVerify(t *testing.T) {
 					"Result": base.ResponseInvalidUserOrPass,
 				})
 			},
-			base.ErrResponseInvalidUserOrPass,
+			base.ErrInvalidUserOrPass,
 		},
 		{
 			"invald data",
@@ -47,7 +47,7 @@ func TestVerify(t *testing.T) {
 					"Result": base.ResponseInvalidUserOrPass,
 				})
 			},
-			base.ErrResponseInvalidUserOrPass,
+			base.ErrInvalidUserOrPass,
 		},
 		{
 			"invald order id",
@@ -90,12 +90,14 @@ func TestVerify(t *testing.T) {
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
 			mux := http.NewServeMux()
 			mux.HandleFunc("/verifyMerchantTrans/", tc.handler)
 			paymentSrv := httptest.NewServer(mux)
 			defer paymentSrv.Close()
 
-			paymentService, err := novinpay.NewService(paymentSrv.URL, novinpay.PaymentGatewayURL, "username", "password", "m123", "t123", paymentSrv.URL, "certificate_password", strings.NewReader("something"))
+			paymentService, err := novinpay.NewService(http.DefaultClient, paymentSrv.URL, novinpay.PaymentGatewayURL, "username", "password", "m123", "t123", paymentSrv.URL, "certificate_password", strings.NewReader("something"))
 			if err != nil {
 				t.Fatal(err)
 			}

@@ -26,9 +26,9 @@ const (
 )
 
 var (
-	ErrResponseInvalidUserOrPass = errors.New("invalid username or password")
-	ErrResponseInvalidSourceIp   = errors.New("invalid ip address")
-	ErrResponseInvalidData       = errors.New("invalid data")
+	ErrInvalidUserOrPass = errors.New("invalid username or password")
+	ErrInvalidSourceIp   = errors.New("invalid ip address")
+	ErrInvalidData       = errors.New("invalid data")
 
 	ErrMismatchVerificationRefnum = errors.New("mismatch verification refnum")
 	ErrMismatchVerificationAmount = errors.New("mismatch verification amount")
@@ -39,11 +39,11 @@ var (
 func GetResponseError(response string) error {
 	switch response {
 	case ResponseInvalidUserOrPass:
-		return ErrResponseInvalidUserOrPass
+		return ErrInvalidUserOrPass
 	case ResponseInvalidSourceIp:
-		return ErrResponseInvalidSourceIp
+		return ErrInvalidSourceIp
 	case ResponseInvalidData:
-		return ErrResponseInvalidData
+		return ErrInvalidData
 	default:
 		return errors.New("unknown")
 	}

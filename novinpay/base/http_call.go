@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func DoPostApiCall[T any](ctx context.Context, url string, requestBody any) (T, error) {
+func DoPostApiCall[T any](ctx context.Context, httpClient *http.Client, url string, requestBody any) (T, error) {
 	var response T
 	body, err := json.Marshal(requestBody)
 	if err != nil {
@@ -18,7 +18,7 @@ func DoPostApiCall[T any](ctx context.Context, url string, requestBody any) (T, 
 	request, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(body))
 	request.Header.Set("Content-Type", "application/json; charset=utf-8")
 
-	httpResponse, err := http.DefaultClient.Do(request)
+	httpResponse, err := httpClient.Do(request)
 	if err != nil {
 		return response, err
 	}

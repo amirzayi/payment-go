@@ -21,84 +21,60 @@ import (
 func TestPay(t *testing.T) {
 	ctx := context.Background()
 
-	t.Run("empty response", func(t *testing.T) {
-		mux := http.NewServeMux()
-		mux.HandleFunc("/merchantLogin/", func(w http.ResponseWriter, r *http.Request) {})
-		paymentSrv := httptest.NewServer(mux)
-		defer paymentSrv.Close()
+	for _, tc := range []struct {
+		name          string
+		handler       http.HandlerFunc
+		expectedError error
+	}{
+		{
+			"empty response",
+			func(w http.ResponseWriter, r *http.Request) {},
+			io.EOF,
+		},
+		{
+			"non http OK status code response",
+			func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusInternalServerError)
+			},
+			base.ErrInvalidResponseStatusCode,
+		},
+		{
+			"invalid username or password",
+			func(w http.ResponseWriter, r *http.Request) {
+				json.NewEncoder(w).Encode(map[string]string{
+					"Result":    base.ResponseInvalidUserOrPass,
+					"SessionId": "12345",
+				})
+			},
+			base.ErrInvalidUserOrPass,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 
-		paymentService, err := novinpay.NewService(paymentSrv.URL, novinpay.PaymentGatewayURL, "username", "password", "m123", "t123", paymentSrv.URL, "certificate_password", strings.NewReader("something"))
-		if err != nil {
-			t.Fatal(err)
-		}
-		refID, paymentURL, err := paymentService.Pay(ctx, paymentgo.PayRequest{
-			Amount: 100000,
-		})
-		if !errors.Is(err, io.EOF) {
-			t.Fatalf("expected %v, but got %v", io.EOF, err)
-		}
-		if refID != "" {
-			t.Fatalf("expected empty refID but got: %s", refID)
-		}
-		if paymentURL != "" {
-			t.Fatalf("expected empty paymentURL but got: %s", paymentURL)
-		}
-	})
+			mux := http.NewServeMux()
+			mux.HandleFunc("/merchantLogin/", tc.handler)
+			paymentSrv := httptest.NewServer(mux)
+			defer paymentSrv.Close()
 
-	t.Run("non http OK status code response", func(t *testing.T) {
-		mux := http.NewServeMux()
-		mux.HandleFunc("/merchantLogin/", func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusInternalServerError)
-		})
-		paymentSrv := httptest.NewServer(mux)
-		defer paymentSrv.Close()
-
-		paymentService, err := novinpay.NewService(paymentSrv.URL, novinpay.PaymentGatewayURL, "username", "password", "m123", "t123", paymentSrv.URL, "certificate_password", strings.NewReader("something"))
-		if err != nil {
-			t.Fatal(err)
-		}
-		refID, paymentURL, err := paymentService.Pay(ctx, paymentgo.PayRequest{
-			Amount: 100000,
-		})
-		if !errors.Is(err, base.ErrInvalidResponseStatusCode) {
-			t.Fatalf("expected %v, but got %v", base.ErrInvalidResponseStatusCode, err)
-		}
-		if refID != "" {
-			t.Fatalf("expected empty refID but got: %s", refID)
-		}
-		if paymentURL != "" {
-			t.Fatalf("expected empty paymentURL but got: %s", paymentURL)
-		}
-	})
-
-	t.Run("invalid username or password", func(t *testing.T) {
-		mux := http.NewServeMux()
-		mux.HandleFunc("/merchantLogin/", func(w http.ResponseWriter, r *http.Request) {
-			json.NewEncoder(w).Encode(map[string]string{
-				"Result":    base.ResponseInvalidUserOrPass,
-				"SessionId": "12345",
+			paymentService, err := novinpay.NewService(http.DefaultClient, paymentSrv.URL, novinpay.PaymentGatewayURL, "username", "password", "m123", "t123", paymentSrv.URL, "certificate_password", strings.NewReader("something"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			refID, paymentURL, err := paymentService.Pay(ctx, paymentgo.PayRequest{
+				Amount: 100000,
 			})
+			if !errors.Is(err, tc.expectedError) {
+				t.Fatalf("expected %v, but got %v", tc.expectedError, err)
+			}
+			if refID != "" {
+				t.Fatalf("expected empty refID but got: %s", refID)
+			}
+			if paymentURL != "" {
+				t.Fatalf("expected empty paymentURL but got: %s", paymentURL)
+			}
 		})
-		paymentSrv := httptest.NewServer(mux)
-		defer paymentSrv.Close()
-
-		paymentService, err := novinpay.NewService(paymentSrv.URL, novinpay.PaymentGatewayURL, "username", "password", "m123", "t123", paymentSrv.URL, "certificate_password", strings.NewReader("something"))
-		if err != nil {
-			t.Fatal(err)
-		}
-		refID, paymentURL, err := paymentService.Pay(ctx, paymentgo.PayRequest{
-			Amount: 100000,
-		})
-		if !errors.Is(err, base.ErrResponseInvalidUserOrPass) {
-			t.Fatalf("expected %v, but got %v", base.ErrResponseInvalidUserOrPass, err)
-		}
-		if refID != "" {
-			t.Fatalf("expected empty refID but got: %s", refID)
-		}
-		if paymentURL != "" {
-			t.Fatalf("expected empty paymentURL but got: %s", paymentURL)
-		}
-	})
+	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/merchantLogin/", func(w http.ResponseWriter, r *http.Request) {
@@ -123,7 +99,9 @@ func TestPay(t *testing.T) {
 			"UserId":         "",
 		})
 	})
-	t.Run("invalid password", func(t *testing.T) {
+	t.Run("invalid certificate password", func(t *testing.T) {
+		t.Parallel()
+
 		paymentSrv := httptest.NewServer(mux)
 		defer paymentSrv.Close()
 
@@ -131,7 +109,7 @@ func TestPay(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed to load file: %v", err)
 		}
-		paymentService, err := novinpay.NewService(paymentSrv.URL, novinpay.PaymentGatewayURL, "username", "password", "m123", "t123", paymentSrv.URL, "invalid password", f)
+		paymentService, err := novinpay.NewService(http.DefaultClient, paymentSrv.URL, novinpay.PaymentGatewayURL, "username", "password", "m123", "t123", paymentSrv.URL, "invalid certificate password", f)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -150,6 +128,8 @@ func TestPay(t *testing.T) {
 	})
 
 	t.Run("successful", func(t *testing.T) {
+		t.Parallel()
+
 		paymentSrv := httptest.NewServer(mux)
 		defer paymentSrv.Close()
 
@@ -157,7 +137,7 @@ func TestPay(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed to load file: %v", err)
 		}
-		paymentService, err := novinpay.NewService(paymentSrv.URL, novinpay.PaymentGatewayURL, "username", "password", "m123", "t123", paymentSrv.URL, "amir", f)
+		paymentService, err := novinpay.NewService(http.DefaultClient, paymentSrv.URL, novinpay.PaymentGatewayURL, "username", "password", "m123", "t123", paymentSrv.URL, "amir", f)
 		if err != nil {
 			t.Fatal(err)
 		}

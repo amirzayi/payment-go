@@ -28,21 +28,24 @@ type settleResponse struct {
 	Result base.Response `xml:"bpSettleRequestResponse"`
 }
 
-func (m service) Settle(ctx context.Context, in settleRequestData) error {
-	response, err := base.DoPostApiCall[settleResponse](ctx, m.serviceURL, settleRequestBody{
-		BPSettleRequest: settleRequest{
-			credentials: credentials{
-				TerminalID:   m.terminalID,
-				UserName:     m.username,
-				UserPassword: m.password,
+func (s service) Settle(ctx context.Context, in settleRequestData) error {
+	response, err := base.DoPostApiCall[settleResponse](
+		ctx,
+		s.httpClient,
+		s.serviceURL, settleRequestBody{
+			BPSettleRequest: settleRequest{
+				credentials: credentials{
+					TerminalID:   s.terminalID,
+					UserName:     s.username,
+					UserPassword: s.password,
+				},
+				settleRequestData: settleRequestData{
+					OrderID:         in.OrderID,
+					SaleOrderID:     in.SaleOrderID,
+					SaleReferenceID: in.SaleReferenceID,
+				},
 			},
-			settleRequestData: settleRequestData{
-				OrderID:         in.OrderID,
-				SaleOrderID:     in.SaleOrderID,
-				SaleReferenceID: in.SaleReferenceID,
-			},
-		},
-	})
+		})
 	if err != nil {
 		return err
 	}

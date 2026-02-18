@@ -53,24 +53,28 @@ func transformPayRequest(in paymentgo.PayRequest) payRequestData {
 	}
 }
 
-func (m service) Pay(ctx context.Context, in paymentgo.PayRequest) (string, string, error) {
+func (s service) Pay(ctx context.Context, in paymentgo.PayRequest) (string, string, error) {
 	now := time.Now()
 	sendDate := now.Format("20060102")
 	sendTime := now.Format("150405")
 
-	response, err := base.DoPostApiCall[payResponse](ctx, m.serviceURL, payRequestBody{
-		BpPayRequest: payRequest{
-			credentials: credentials{
-				TerminalID:   m.terminalID,
-				UserName:     m.username,
-				UserPassword: m.password,
+	response, err := base.DoPostApiCall[payResponse](
+		ctx,
+		s.httpClient,
+		s.serviceURL,
+		payRequestBody{
+			BpPayRequest: payRequest{
+				credentials: credentials{
+					TerminalID:   s.terminalID,
+					UserName:     s.username,
+					UserPassword: s.password,
+				},
+				LocalDate:      sendDate,
+				LocalTime:      sendTime,
+				CallbackURL:    s.callbackURL,
+				payRequestData: transformPayRequest(in),
 			},
-			LocalDate:      sendDate,
-			LocalTime:      sendTime,
-			CallbackURL:    m.callbackURL,
-			payRequestData: transformPayRequest(in),
-		},
-	})
+		})
 	if err != nil {
 		return "", "", err
 	}
@@ -81,6 +85,6 @@ func (m service) Pay(ctx context.Context, in paymentgo.PayRequest) (string, stri
 	}
 
 	refID := parts[1]
-	paymentURL := fmt.Sprintf("%s?RefId=%s", m.gatewayURL, refID)
+	paymentURL := fmt.Sprintf("%s?RefId=%s", s.gatewayURL, refID)
 	return refID, paymentURL, nil
 }

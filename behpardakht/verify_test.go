@@ -24,7 +24,7 @@ func TestVerify(t *testing.T) {
 		paymentSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
 		defer paymentSrv.Close()
 
-		bp := behpardakht.NewService(paymentSrv.URL, behpardakht.GatewayURL, "username", "password", paymentSrv.URL, 1)
+		bp := behpardakht.NewService(http.DefaultClient, paymentSrv.URL, behpardakht.GatewayURL, "username", "password", paymentSrv.URL, 1)
 
 		err := bp.Verify(ctx, paymentgo.VerifiyRequest{})
 
@@ -40,7 +40,7 @@ func TestVerify(t *testing.T) {
 		paymentSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
 		defer paymentSrv.Close()
 
-		bp := behpardakht.NewService(paymentSrv.URL, behpardakht.GatewayURL, "username", "password", paymentSrv.URL, 1)
+		bp := behpardakht.NewService(http.DefaultClient, paymentSrv.URL, behpardakht.GatewayURL, "username", "password", paymentSrv.URL, 1)
 
 		err := bp.Verify(ctx, paymentgo.VerifiyRequest{
 			OrderID: "20123", ReferenceID: "48128", Amount: 5000000,
@@ -59,7 +59,7 @@ func TestVerify(t *testing.T) {
 		}))
 		defer paymentSrv.Close()
 
-		bp := behpardakht.NewService(paymentSrv.URL, behpardakht.GatewayURL, "username", "password", paymentSrv.URL, 1)
+		bp := behpardakht.NewService(http.DefaultClient, paymentSrv.URL, behpardakht.GatewayURL, "username", "password", paymentSrv.URL, 1)
 
 		err := bp.Verify(ctx, paymentgo.VerifiyRequest{
 			OrderID: "20123", ReferenceID: "48128", Amount: 5000000,
@@ -117,7 +117,7 @@ func TestVerify(t *testing.T) {
 		}))
 		defer paymentSrv.Close()
 
-		bp := behpardakht.NewService(paymentSrv.URL, behpardakht.GatewayURL, "username", "password", paymentSrv.URL, 1)
+		bp := behpardakht.NewService(http.DefaultClient, paymentSrv.URL, behpardakht.GatewayURL, "username", "password", paymentSrv.URL, 1)
 
 		err := bp.Verify(ctx, paymentgo.VerifiyRequest{
 			OrderID: "20123", ReferenceID: "48128", Amount: 5000000,
